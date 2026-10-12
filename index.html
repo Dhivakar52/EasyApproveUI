@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easy Approve – Approval Management System</title>
+  <meta name="description" content="Easy Approve: an interactive prototype of an approval management system.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (official Play CDN – prototype only) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa',
+              500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Lucide icons (CDN) and application logic -->
+  <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+
+<body class="h-full font-sans text-slate-800 antialiased">
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <noscript>
+    <div class="m-6 rounded-lg bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+      Easy Approve needs JavaScript enabled to run this prototype.
+    </div>
+  </noscript>
+
+  <div id="app-shell" class="min-h-full">
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 z-40 hidden bg-slate-900/50 lg:hidden" data-action="close-nav" aria-hidden="true"></div>
+
+    <!-- Left sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-slate-900 text-slate-300" aria-label="Sidebar">
+      <div class="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
+        <a href="#/dashboard" class="flex items-center gap-2.5 rounded-md text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <span class="text-base font-semibold tracking-tight">Easy Approve</span>
+        </a>
+        <button type="button" class="rounded-md p-1.5 text-slate-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 lg:hidden" data-action="close-nav" aria-label="Close navigation">
+          <i data-lucide="x" class="h-5 w-5" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
+        <ul id="nav-list" class="space-y-1"></ul>
+      </nav>
+
+      <div class="shrink-0 border-t border-white/10 p-4">
+        <p class="text-xs leading-relaxed text-slate-400">
+          <span class="font-semibold text-slate-300">Demo mode.</span>
+          Roles are simulated in the browser for demonstration only. This is not real security.
+        </p>
+        <button type="button" data-action="reset-demo" class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 ring-1 ring-inset ring-white/10 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
+          <i data-lucide="rotate-ccw" class="h-3.5 w-3.5" aria-hidden="true"></i> Reset demo data
+        </button>
+      </div>
+    </aside>
+
+    <div class="lg:pl-64">
+      <!-- Top header -->
+      <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
+          <button type="button" id="btn-open-nav" data-action="open-nav" class="-ml-1 rounded-lg p-2 text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 lg:hidden" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
+            <i data-lucide="menu" class="h-5 w-5" aria-hidden="true"></i>
+          </button>
+
+          <h1 id="page-title" tabindex="-1" class="truncate text-lg font-semibold tracking-tight text-slate-900">Dashboard</h1>
+
+          <form id="global-search" data-form="global-search" role="search" class="order-last w-full md:order-none md:ml-6 md:w-auto md:max-w-md md:flex-1">
+            <label for="global-search-input" class="sr-only">Search requests</label>
+            <div class="relative">
+              <i data-lucide="search" class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden="true"></i>
+              <input id="global-search-input" name="q" type="search" autocomplete="off" placeholder="Search requests by ID, title or group"
+                class="block w-full rounded-lg border-0 bg-slate-100 py-2 pl-9 pr-3 text-sm text-slate-900 ring-1 ring-inset ring-transparent placeholder:text-slate-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500">
+            </div>
+          </form>
+
+          <div class="ml-auto flex items-center gap-2 sm:gap-3">
+            <div>
+              <label for="role-switcher" class="sr-only">Demo role</label>
+              <select id="role-switcher" class="rounded-lg border-0 bg-white py-2 pl-3 pr-8 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"></select>
+            </div>
+
+            <a id="bell-link" href="#/notifications" class="relative rounded-lg p-2 text-slate-600 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label="Notifications">
+              <i data-lucide="bell" class="h-5 w-5" aria-hidden="true"></i>
+              <span id="bell-badge" class="absolute right-0.5 top-0.5 hidden min-w-[1.1rem] rounded-full bg-rose-600 px-1 text-center text-[0.65rem] font-semibold leading-[1.1rem] text-white"></span>
+            </a>
+
+            <button type="button" id="profile-btn" data-action="open-profile-menu" data-menu-anchor aria-haspopup="menu" aria-expanded="false"
+              class="flex items-center gap-2 rounded-lg p-1 pr-2 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+              <span id="profile-avatar"></span>
+              <span class="hidden text-left sm:block">
+                <span id="profile-name" class="block text-sm font-medium leading-tight text-slate-900"></span>
+                <span id="profile-role" class="block text-xs leading-tight text-slate-500"></span>
+              </span>
+              <i data-lucide="chevron-down" class="hidden h-4 w-4 text-slate-400 sm:block" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main content -->
+      <main id="main" tabindex="-1" class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <section id="view-dashboard" class="view" aria-labelledby="page-title" hidden></section>
+        <section id="view-create" class="view" aria-labelledby="page-title" hidden></section>
+        <section id="view-my-requests" class="view" aria-labelledby="page-title" hidden></section>
+        <section id="view-approvals" class="view" aria-labelledby="page-title" hidden></section>
+        <section id="view-details" class="view" aria-labelledby="page-title" hidden></section>
+        <section id="view-clarifications" class="view" aria-labelledby="page-title" hidden></section>
+        <section id="view-delegation" class="view" aria-labelledby="page-title" hidden></section>
+        <section id="view-notifications" class="view" aria-labelledby="page-title" hidden></section>
+        <section id="view-admin" class="view" aria-labelledby="page-title" hidden></section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Overlays live outside the app shell so the shell can be made inert while a dialog is open -->
+  <div id="toast-root" class="pointer-events-none fixed inset-x-0 top-4 z-[80] flex flex-col items-center gap-2 px-4 sm:items-end sm:px-6" aria-live="polite"></div>
+  <div id="modal-root"></div>
+  <div id="menu-root"></div>
+</body>
+</html>

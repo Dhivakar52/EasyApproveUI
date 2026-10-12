@@ -1,0 +1,114 @@
+/* Easy Approve – custom CSS.
+   Tailwind utilities handle layout, spacing, typography, buttons, badges and cards.
+   This file only holds what utilities cannot express cleanly. */
+
+:root { color-scheme: light; }
+
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Skip link ------------------------------------------------------------ */
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: top 0.15s ease;
+}
+.skip-link:focus { top: 0.75rem; }
+
+#page-title:focus,
+#main:focus,
+[data-focus-target]:focus { outline: none; }
+
+/* Sidebar: off-canvas below lg, always visible at lg and up ----------- */
+@media (max-width: 1023.98px) {
+  .sidebar {
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.25s ease, visibility 0s linear 0.25s;
+  }
+  .sidebar[data-open="true"] {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.25s ease;
+  }
+}
+
+/* Invalid form controls (set by JS through aria-invalid) --------------- */
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"],
+input[aria-invalid="true"]:focus,
+select[aria-invalid="true"]:focus,
+textarea[aria-invalid="true"]:focus {
+  --tw-ring-color: #e11d48;
+  background-color: #fff1f2;
+}
+
+/* Menu anchors while their menu is open -------------------------------- */
+[data-menu-anchor][aria-expanded="true"] { background-color: #f1f5f9; }
+
+/* Dialog + toast motion ------------------------------------------------- */
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+.modal-panel { animation: pop-in 0.18s ease-out; }
+.toast { animation: slide-in 0.2s ease-out; }
+.floating-menu { animation: pop-in 0.12s ease-out; }
+
+/* Approval history timeline ------------------------------------------- */
+.timeline-item { position: relative; }
+.timeline-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  top: 2.25rem;
+  bottom: -1rem;
+  width: 2px;
+  margin-left: -1px;
+  background: #e2e8f0;
+}
+
+/* Attachment drop zone while dragging a file over it ------------------- */
+.dropzone[data-dragging="true"] {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+/* Table polish --------------------------------------------------------- */
+.data-table th,
+.data-table td { vertical-align: middle; }
+.data-table tbody tr:last-child td { border-bottom: 0; }
+
+/* Slim scrollbars for scrollable regions ------------------------------- */
+.thin-scroll { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+.thin-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+.thin-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+
+/* Keep long words from breaking layouts -------------------------------- */
+.break-anywhere { overflow-wrap: anywhere; }
+
+@media print {
+  .sidebar, header, #toast-root { display: none !important; }
+  .lg\:pl-64 { padding-left: 0 !important; }
+}
