@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Easy Approve – Approval Management System (interactive prototype)">
+  <title>Easy Approve – Approval Management</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (official browser CDN build, prototype use only) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@1.55.0/dist/umd/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="demo.css">
+  <script src="demo.js" defer></script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased">
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Mobile sidebar overlay -->
+  <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 z-30 bg-slate-900/50 lg:hidden"
+    data-action="close-sidebar" hidden></div>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-slate-900 text-slate-300"
+    aria-label="Sidebar">
+    <div class="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-white/10 px-5">
+      <a href="#/dashboard"
+        class="flex items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-400">
+        <span class="grid size-9 place-items-center rounded-lg bg-indigo-500 text-white shadow-lg shadow-indigo-500/30">
+          <i data-lucide="clipboard-check" class="size-5"></i>
+        </span>
+        <span class="leading-tight">
+          <span class="block text-base font-semibold text-white">Easy Approve</span>
+          <span class="block text-[11px] font-medium uppercase tracking-wider text-slate-400">Approval Management</span>
+        </span>
+      </a>
+      <button type="button" class="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white lg:hidden"
+        data-action="close-sidebar" aria-label="Close navigation">
+        <i data-lucide="x" class="size-5"></i>
+      </button>
+    </div>
+
+    <nav id="sidebarNav" class="sidebar-scroll flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation"></nav>
+
+    <div class="border-t border-white/10 p-4">
+      <div class="rounded-lg bg-white/5 p-3 text-xs leading-relaxed text-slate-400">
+        <p class="flex items-center gap-1.5 font-semibold text-slate-200"><i data-lucide="info" class="size-3.5"></i>
+          Demo prototype</p>
+        <p class="mt-1">Data is stored in this browser only. Role switching is a UI simulation, not security.</p>
+      </div>
+      <button type="button"
+        class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-indigo-400"
+        data-action="reset-demo">
+        <i data-lucide="rotate-ccw" class="size-4"></i> Reset demo data
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN COLUMN ============ -->
+  <div class="flex min-h-screen min-w-0 flex-col lg:pl-64">
+    <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
+        <button type="button" class="-ml-1 rounded-md p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+          data-action="open-sidebar" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"
+          id="sidebarToggle">
+          <i data-lucide="menu" class="size-5"></i>
+        </button>
+
+        <div class="min-w-0 flex-1">
+          <h1 id="pageTitle" class="truncate text-lg font-semibold text-slate-900 sm:text-xl">Dashboard</h1>
+          <p id="pageSubtitle" class="hidden truncate text-sm text-slate-500 sm:block"></p>
+        </div>
+
+        <!-- Global search -->
+        <div class="relative order-last w-full md:order-none md:w-72" id="globalSearchWrap">
+          <label for="globalSearch" class="sr-only">Search requests</label>
+          <i data-lucide="search"
+            class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"></i>
+          <input id="globalSearch" type="search" autocomplete="off" placeholder="Search requests…"
+            class="block w-full rounded-lg border-0 bg-slate-100 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-500 focus:bg-white focus:ring-2 focus:ring-indigo-600"
+            aria-controls="globalSearchResults" aria-expanded="false" aria-autocomplete="list">
+          <div id="globalSearchResults"
+            class="popover absolute inset-x-0 top-full z-30 mt-2 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-slate-200"
+            role="listbox" aria-label="Search results" hidden></div>
+        </div>
+
+        <!-- Notifications bell -->
+        <div class="relative">
+          <button type="button" id="notifBell"
+            class="relative rounded-full p-2 text-slate-600 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-indigo-600"
+            data-action="toggle-notif-panel" aria-haspopup="dialog" aria-expanded="false" aria-controls="notifPanel"
+            aria-label="Notifications">
+            <i data-lucide="bell" class="size-5"></i>
+            <span id="notifCount"
+              class="badge-count absolute -right-0.5 -top-0.5 grid min-w-[1.15rem] place-items-center rounded-full bg-rose-600 px-1 text-[10px] font-bold leading-[1.15rem] text-white"
+              hidden>0</span>
+          </button>
+          <div id="notifPanel"
+            class="popover absolute right-0 top-full z-30 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-slate-200"
+            role="dialog" aria-label="Recent notifications" hidden></div>
+        </div>
+
+        <!-- Profile + demo role switcher -->
+        <div class="flex items-center gap-3 border-l border-slate-200 pl-3">
+          <div id="profileAvatar" aria-hidden="true"></div>
+          <div class="hidden leading-tight xl:block">
+            <p id="profileName" class="text-sm font-semibold text-slate-900"></p>
+            <p id="profileMeta" class="text-xs text-slate-500"></p>
+          </div>
+          <div>
+            <label for="roleSwitcher"
+              class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Demo role</label>
+            <select id="roleSwitcher"
+              class="role-select -ml-0.5 rounded-md border-0 bg-transparent py-0 pl-0.5 pr-6 text-sm font-medium text-indigo-700 focus:ring-2 focus:ring-indigo-600"></select>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1" class="flex-1 px-4 py-6 outline-none sm:px-6 lg:px-8">
+      <!-- Page containers: content is rendered by app.js -->
+      <section id="page-dashboard" class="page" data-page="dashboard" aria-labelledby="pageTitle" hidden></section>
+      <section id="page-create" class="page" data-page="create" aria-labelledby="pageTitle" hidden></section>
+      <section id="page-my-requests" class="page" data-page="my-requests" aria-labelledby="pageTitle" hidden></section>
+      <section id="page-approvals" class="page" data-page="approvals" aria-labelledby="pageTitle" hidden></section>
+      <section id="page-request" class="page" data-page="request" aria-labelledby="pageTitle" hidden></section>
+      <section id="page-clarifications" class="page" data-page="clarifications" aria-labelledby="pageTitle" hidden>
+      </section>
+      <section id="page-delegation" class="page" data-page="delegation" aria-labelledby="pageTitle" hidden></section>
+      <section id="page-notifications" class="page" data-page="notifications" aria-labelledby="pageTitle" hidden>
+      </section>
+      <section id="page-admin" class="page" data-page="admin" aria-labelledby="pageTitle" hidden></section>
+
+      <noscript>
+        <p class="rounded-lg bg-amber-50 p-4 text-amber-800">Easy Approve needs JavaScript enabled to run.</p>
+      </noscript>
+    </main>
+
+    <footer class="px-4 pb-6 text-xs text-slate-400 sm:px-6 lg:px-8">
+      Easy Approve prototype · front-end only · no data leaves this browser
+    </footer>
+  </div>
+
+  <!-- Floating three-dot action menu (shared) -->
+  <div id="actionMenu"
+    class="popover fixed z-50 w-56 overflow-hidden rounded-xl bg-white py-1 shadow-xl ring-1 ring-slate-200" role="menu"
+    hidden></div>
+
+  <!-- Modal root -->
+  <div id="modalRoot"></div>
+
+  <!-- Toasts -->
+  <div id="toastRoot"
+    class="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 p-4 sm:items-end sm:p-6"
+    aria-live="polite" aria-atomic="false"></div>
+</body>
+
+</html>
